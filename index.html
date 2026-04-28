@@ -653,15 +653,24 @@
         <!-- 等待创建 -->
         <div id="diceWaiting">
           <div class="game-title" style="margin-bottom:8px;">🎲 摇骰子</div>
-          <div class="game-sub">创建房间，邀请好友一起玩</div>
-          <button class="btn primary" id="diceCreateBtn" style="margin:8px auto 0;display:block;">创建房间</button>
+          <div class="game-sub">创建房间，或输入房间号加入好友</div>
+          <button class="btn primary" id="diceCreateBtn" style="margin:16px auto 0;display:block;">创建房间</button>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+            <input id="diceJoinInput" type="text" maxlength="6" placeholder="输入房间号" style="flex:1;padding:9px 14px;border-radius:10px;border:1.5px solid rgba(124,106,247,0.35);background:rgba(255,255,255,0.05);color:#e2e8f0;font-size:14px;letter-spacing:2px;text-transform:uppercase;outline:none;" />
+            <button class="btn" id="diceJoinBtn" style="padding:9px 18px;white-space:nowrap;">加入</button>
+          </div>
         </div>
 
         <!-- 房间内 -->
         <div id="diceRoom" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div class="game-title" style="font-size:17px;">🎲 摇骰子</div>
             <button class="share-btn" id="diceShareBtn" style="margin:0;padding:6px 14px;font-size:12px;"><span>🔗</span> 邀请好友</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;">
+            <span style="font-size:12px;color:var(--muted2);">房间号</span>
+            <span id="diceRoomIdDisplay" style="font-size:20px;font-weight:800;letter-spacing:4px;color:var(--accent);font-family:monospace;"></span>
+            <button id="diceCopyRoomBtn" style="background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.3);color:var(--accent);border-radius:7px;padding:3px 10px;font-size:11px;cursor:pointer;">复制</button>
           </div>
           <div id="dicePlayerList" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;justify-content:center;"></div>
           <div id="diceStatus" style="font-size:13px;color:var(--muted2);margin-bottom:16px;min-height:20px;text-align:center;"></div>
@@ -1481,6 +1490,7 @@ renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
           renderPlayers();
           setStatus('等待好友加入…');
           // 显示房间 UI
+          document.getElementById('diceRoomIdDisplay').textContent = rid;
           elWaiting.style.display = 'none';
           elRoom.style.display = 'block';
           btnRoll.disabled = false;
@@ -1513,6 +1523,23 @@ renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
     url.searchParams.set('room', rid);
     history.replaceState(null, '', url.toString());
     joinChannel(rid);
+  });
+
+  document.getElementById('diceJoinBtn').addEventListener('click', () => {
+    const rid = document.getElementById('diceJoinInput').value.trim().toUpperCase();
+    if (!rid || rid.length < 4) { setStatus('请输入有效的房间号'); return; }
+    const url = new URL(window.location.href);
+    url.searchParams.set('room', rid);
+    history.replaceState(null, '', url.toString());
+    joinChannel(rid);
+  });
+
+  document.getElementById('diceJoinInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('diceJoinBtn').click();
+  });
+
+  document.getElementById('diceCopyRoomBtn').addEventListener('click', () => {
+    copyText(roomId, document.getElementById('diceCopyRoomBtn'));
   });
 
   btnShare.addEventListener('click', () => {
