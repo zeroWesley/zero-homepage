@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zero's Homepage</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080810;
+      --card: #111120;
+      --card2: #161628;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(124,106,247,0.45);
+      --accent: #7c6af7;
+      --accent2: #38bdf8;
+      --accent3: #f472b6;
+      --accent4: #34d399;
+      --text: #eeeef5;
+      --muted: #6b6b8a;
+      --muted2: #9898b8;
+      --radius: 18px;
+      --radius-sm: 10px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Ambient background ── */
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.14;
+      animation: drift ease-in-out infinite alternate;
+    }
+    .orb1 { width: 600px; height: 600px; background: var(--accent);  top: -150px; left: -150px; animation-duration: 22s; }
+    .orb2 { width: 500px; height: 500px; background: var(--accent2); bottom: -100px; right: -100px; animation-duration: 28s; animation-delay: -10s; }
+    .orb3 { width: 350px; height: 350px; background: var(--accent3); top: 45%; left: 55%; animation-duration: 20s; animation-delay: -5s; }
+    .orb4 { width: 250px; height: 250px; background: var(--accent4); top: 20%; right: 10%; animation-duration: 18s; animation-delay: -3s; }
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(50px,35px) scale(1.12); }
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(8,8,16,0.8);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 17px; font-weight: 800; letter-spacing: 1px;
+      background: linear-gradient(120deg, #a78bfa, var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a {
+      color: var(--muted2); text-decoration: none; font-size: 13px; font-weight: 500;
+      transition: color .2s; letter-spacing: .3px;
+    }
+    .nav-links a:hover { color: var(--text); }
+    /* visitor badge in nav */
+    .nav-visitor {
+      font-size: 12px; color: var(--accent4); font-weight: 600;
+      background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25);
+      padding: 3px 10px; border-radius: 999px; cursor: pointer;
+      transition: all .2s; white-space: nowrap; max-width: 140px;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .nav-visitor:hover { background: rgba(52,211,153,0.18); }
+
+    /* ── Layout ── */
+    .container {
+      position: relative; z-index: 1;
+      max-width: 860px; margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; padding: 72px 0 56px; gap: 18px;
+    }
+    .avatar-wrap { position: relative; width: 130px; height: 130px; }
+    .avatar-ring {
+      position: absolute; inset: -4px; border-radius: 50%;
+      background: conic-gradient(var(--accent) 0deg, var(--accent2) 120deg, var(--accent3) 240deg, var(--accent) 360deg);
+      animation: spin 5s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .avatar-gap {
+      position: absolute; inset: 3px; border-radius: 50%;
+      background: var(--bg);
+    }
+    .avatar-inner {
+      position: absolute; inset: 7px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 38%, #1e1b40, #08080f);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-z {
+      position: relative;
+      font-size: 58px; font-weight: 900; font-style: italic;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      transform: rotate(-8deg) skewX(-4deg);
+      background: linear-gradient(135deg, #e0d7ff 0%, #a78bfa 40%, #38bdf8 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 12px rgba(124,106,247,0.75)) drop-shadow(0 0 28px rgba(56,189,248,0.3));
+      line-height: 1; user-select: none;
+    }
+    .avatar-z::after {
+      content: '';
+      position: absolute; bottom: 4px; left: 2px; right: -2px;
+      height: 2.5px; border-radius: 2px;
+      background: linear-gradient(90deg, #7c6af7, #38bdf8);
+      opacity: 0.7;
+    }
+    .hero-name {
+      font-size: 38px; font-weight: 900; letter-spacing: .5px;
+      background: linear-gradient(135deg, #fff 20%, #c4b5fd 60%, var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+    .hero-role {
+      font-size: 13px; color: var(--accent2); letter-spacing: 3.5px;
+      text-transform: uppercase; font-weight: 600;
+    }
+    .hero-bio {
+      max-width: 540px; font-size: 15px; color: var(--muted2); line-height: 1.85;
+    }
+    .hero-stats {
+      display: flex; gap: 32px; margin: 4px 0;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 26px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: .5px; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .tag {
+      padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 500;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+      color: var(--muted2); transition: all .22s; cursor: default;
+    }
+    .tag:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,106,247,0.1); }
+    .tag.tag-pm   { color: #c4b5fd; border-color: rgba(167,139,250,0.4); }
+    .tag.tag-ai   { color: #7dd3fc; border-color: rgba(56,189,248,0.4); }
+    .tag.tag-game { color: #6ee7b7; border-color: rgba(52,211,153,0.4); }
+
+    /* ── Section ── */
+    .section { margin-top: 64px; }
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 22px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-title .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 10px var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── Focus cards ── */
+    .cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 20px;
+      transition: transform .22s, border-color .22s, box-shadow .22s;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 0% 0%, rgba(124,106,247,0.08) 0%, transparent 60%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .card:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 12px 40px rgba(124,106,247,0.14); }
+    .card:hover::before { opacity: 1; }
+    .card-icon { margin-bottom: 16px; display: block; line-height: 1; }
+    .card-icon-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 34px; min-width: 44px; padding: 0 12px;
+      border-radius: 10px;
+      font-size: 13px; font-weight: 800; font-style: italic;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      letter-spacing: 0.5px;
+      background: transparent;
+    }
+    .card-icon-badge.badge-pm {
+      color: #c4b5fd;
+      border: 1.5px solid rgba(167,139,250,0.45);
+      box-shadow: 0 0 12px rgba(167,139,250,0.12), inset 0 0 12px rgba(167,139,250,0.06);
+    }
+    .card-icon-badge.badge-ai {
+      color: #7dd3fc;
+      border: 1.5px solid rgba(56,189,248,0.45);
+      box-shadow: 0 0 12px rgba(56,189,248,0.12), inset 0 0 12px rgba(56,189,248,0.06);
+    }
+    .card-icon-badge.badge-game {
+      color: #6ee7b7;
+      border: 1.5px solid rgba(52,211,153,0.45);
+      box-shadow: 0 0 12px rgba(52,211,153,0.12), inset 0 0 12px rgba(52,211,153,0.06);
+    }
+    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .card-desc { font-size: 13px; color: var(--muted2); line-height: 1.75; }
+    .card-tag {
+      display: inline-block; margin-top: 12px;
+      padding: 3px 10px; border-radius: 999px; font-size: 11px;
+      background: rgba(124,106,247,0.12); color: var(--accent); border: 1px solid rgba(124,106,247,0.2);
+    }
+
+    /* ── Game section ── */
+    .game-mode-tabs {
+      display: flex; gap: 8px; margin-bottom: 12px;
+    }
+    .game-mode-tab {
+      padding: 9px 22px; border-radius: 12px; font-size: 14px; font-weight: 700;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted2); cursor: pointer; transition: all .2s;
+    }
+    .game-mode-tab.active {
+      background: rgba(124,106,247,0.18); border-color: var(--accent);
+      color: var(--accent);
+    }
+    .game-mode-tab[data-mode="online"].active {
+      background: rgba(52,211,153,0.15); border-color: var(--accent4);
+      color: var(--accent4);
+    }
+    .game-mode-tab:hover:not(.active) { border-color: var(--border-hover); color: var(--text); }
+    .game-sub-tabs {
+      display: flex; gap: 8px; margin-bottom: 16px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .game-tab {
+      padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted2); cursor: pointer; transition: all .2s;
+    }
+    .game-tab.active {
+      background: rgba(124,106,247,0.15); border-color: var(--accent);
+      color: var(--accent);
+    }
+    .game-tab:hover:not(.active) { border-color: var(--border-hover); color: var(--text); }
+    .game-panel { display: none; }
+    .game-panel.active { display: block; }
+
+    .game-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 36px 32px;
+      text-align: center;
+    }
+    .game-header { margin-bottom: 6px; }
+    .game-title { font-size: 20px; font-weight: 800; }
+    .game-sub { font-size: 13px; color: var(--muted2); margin: 6px 0 22px; }
+
+    /* Snake canvas */
+    #snakeCanvas {
+      display: block; margin: 0 auto 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(124,106,247,0.2);
+      background: #06060f;
+      box-shadow: 0 0 40px rgba(124,106,247,0.1);
+    }
+    /* 1024 canvas */
+    #g1024Canvas {
+      display: block; margin: 0 auto 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(56,189,248,0.2);
+      background: #06060f;
+      box-shadow: 0 0 40px rgba(56,189,248,0.1);
+    }
+
+    .game-score { font-size: 13px; color: var(--muted2); margin-bottom: 16px; }
+    .game-score b { color: var(--accent2); font-size: 16px; }
+    .game-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 26px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+      color: var(--text); cursor: pointer; transition: all .2s; letter-spacing: .3px;
+    }
+    .btn:hover:not(:disabled) { background: rgba(124,106,247,0.2); border-color: var(--accent); color: var(--accent); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.primary:hover:not(:disabled) { background: #6b59e8; }
+    .btn.btn-green { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.4); color: var(--accent4); }
+    .btn.btn-green:hover:not(:disabled) { background: rgba(52,211,153,0.25); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* speed selector */
+    .speed-row { display: flex; gap: 8px; justify-content: center; margin-top: 14px; align-items: center; }
+    .speed-label { font-size: 12px; color: var(--muted); }
+    .speed-btn {
+      padding: 4px 12px; border-radius: 999px; font-size: 12px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted2); cursor: pointer; transition: all .18s;
+    }
+    .speed-btn.active, .speed-btn:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(56,189,248,0.08); }
+
+    /* d-pad */
+    #dpad { display: none; margin-top: 20px; }
+    .dpad-grid { display: grid; grid-template-columns: repeat(3,48px); grid-template-rows: repeat(3,48px); gap: 5px; justify-content: center; }
+    .dpad-btn {
+      width: 48px; height: 48px; border-radius: 10px; font-size: 20px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+      color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .dpad-btn:active { background: rgba(124,106,247,0.25); }
+
+    /* ── Leaderboard ── */
+    .leaderboard {
+      margin-top: 24px; text-align: left;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); overflow: hidden;
+    }
+    .lb-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .lb-header span { color: var(--accent2); font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+    .lb-row {
+      display: grid; grid-template-columns: 28px 1fr auto auto;
+      align-items: center; gap: 10px;
+      padding: 9px 16px; font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background .15s;
+    }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-row:hover { background: rgba(255,255,255,0.03); }
+    .lb-rank { font-weight: 800; color: var(--muted); font-size: 12px; }
+    .lb-rank.gold   { color: #fbbf24; }
+    .lb-rank.silver { color: #94a3b8; }
+    .lb-rank.bronze { color: #b45309; }
+    .lb-name { color: var(--text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-score { color: var(--accent2); font-weight: 700; font-size: 14px; }
+    .lb-time { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .lb-empty { padding: 20px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    /* ── Online game (Doudizhu placeholder) ── */
+    .online-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 48px 32px;
+      text-align: center;
+    }
+    .online-icon { font-size: 48px; margin-bottom: 16px; }
+    .online-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .online-desc { font-size: 14px; color: var(--muted2); line-height: 1.8; max-width: 480px; margin: 0 auto 24px; }
+    .online-rule {
+      display: inline-block; padding: 10px 20px;
+      background: rgba(244,114,182,0.08); border: 1px solid rgba(244,114,182,0.2);
+      border-radius: var(--radius-sm); font-size: 13px; color: #f9a8d4;
+      line-height: 1.7; text-align: left; max-width: 480px;
+    }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 20px; padding: 10px 24px; border-radius: 999px;
+      background: rgba(244,114,182,0.15); border: 1px solid rgba(244,114,182,0.35);
+      color: #f9a8d4; font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all .2s;
+    }
+    .share-btn:hover { background: rgba(244,114,182,0.25); }
+
+    /* ── Visitor section ── */
+    .visitor-wrap {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px;
+    }
+    .visitor-stats {
+      display: flex; gap: 24px; margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .vstat {
+      flex: 1; min-width: 120px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px 20px; text-align: center;
+    }
+    .vstat-num {
+      font-size: 28px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent4), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .vstat-label { font-size: 11px; color: var(--muted); margin-top: 5px; letter-spacing: .5px; }
+    .visitor-list { display: flex; flex-direction: column; gap: 10px; }
+    .visitor-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: var(--radius-sm);
+      transition: border-color .2s;
+    }
+    .visitor-item:hover { border-color: rgba(52,211,153,0.25); }
+    .visitor-avatar {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #fff;
+    }
+    .visitor-info { flex: 1; min-width: 0; }
+    .visitor-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .visitor-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .visitor-badge {
+      font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(52,211,153,0.1); color: var(--accent4);
+      border: 1px solid rgba(52,211,153,0.2); white-space: nowrap;
+    }
+    .visitor-empty { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
+
+    /* ── Visitor nickname modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--card2); border: 1px solid rgba(124,106,247,0.3);
+      border-radius: 20px; padding: 36px 32px; width: 360px; max-width: 90vw;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,106,247,0.1);
+      transform: translateY(20px) scale(0.97); transition: transform .3s;
+      text-align: center;
+    }
+    .modal-overlay.show .modal { transform: none; }
+    .modal-icon { font-size: 36px; margin-bottom: 12px; }
+    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .modal-desc { font-size: 13px; color: var(--muted2); margin-bottom: 22px; line-height: 1.7; }
+    .modal-input {
+      width: 100%; padding: 11px 16px; border-radius: 10px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(124,106,247,0.3);
+      color: var(--text); font-size: 14px; font-family: inherit;
+      outline: none; transition: border-color .2s; margin-bottom: 16px;
+      text-align: center;
+    }
+    .modal-input:focus { border-color: var(--accent); }
+    .modal-btn {
+      width: 100%; padding: 12px; border-radius: 10px;
+      background: var(--accent); border: none; color: #fff;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background .2s; font-family: inherit;
+    }
+    .modal-btn:hover { background: #6b59e8; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 28px 20px;
+      font-size: 12px; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Reveal animation ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .cards { grid-template-columns: 1fr; }
+      .hero-name { font-size: 28px; }
+      .hero-stats { gap: 20px; }
+      nav { padding: 12px 16px; }
+      .nav-links { gap: 16px; }
+      .game-wrap { padding: 24px 16px; }
+      .online-wrap { padding: 32px 16px; }
+      .visitor-wrap { padding: 20px 16px; }
+      .modal { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Visitor nickname modal ── -->
+<div class="modal-overlay" id="nicknameModal">
+  <div class="modal">
+    <div class="modal-icon">👋</div>
+    <div class="modal-title">欢迎来到 Zero 的主页</div>
+    <div class="modal-desc">留下你的昵称，让我知道你来过～<br>默认为随机游客名，可以直接确认</div>
+    <input class="modal-input" id="nicknameInput" type="text" maxlength="20" placeholder="输入你的昵称" />
+    <button class="modal-btn" id="nicknameConfirm">确认进入</button>
+  </div>
+</div>
+
+<div class="bg-canvas">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="orb orb4"></div>
+</div>
+
+<nav>
+  <div class="nav-logo">Zero ✦</div>
+  <div class="nav-links">
+    <a href="#about">关于</a>
+    <a href="#focus">方向</a>
+    <a href="#game">小游戏</a>
+    <a href="#visitors">访客</a>
+    <span class="nav-visitor" id="navVisitor" title="点击修改昵称">👤 加载中…</span>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ── Hero ── -->
+  <section class="hero" id="about">
+    <div class="avatar-wrap">
+      <div class="avatar-ring"></div>
+      <div class="avatar-gap"></div>
+      <div class="avatar-inner"><span class="avatar-z">Z</span></div>
+    </div>
+    <div class="hero-name">Zero</div>
+    <div class="hero-role">Product Manager</div>
+    <p class="hero-bio">
+      产品经理，持续探索 AI 工具在产品工作中的实际应用。<br>
+      相信技术与产品思维的结合能创造更大价值。
+    </p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">持续学习中</div></div>
+    </div>
+    <div class="hero-tags">
+      <span class="tag tag-pm">PM · 产品经理方向</span>
+      <span class="tag tag-ai">AI · 工具探索</span>
+      <span class="tag tag-game">GAME · 小游戏</span>
+    </div>
+  </section>
+
+  <!-- ── Focus ── -->
+  <section class="section reveal" id="focus">
+    <div class="section-title"><span class="dot"></span>当前方向</div>
+    <div class="cards">
+      <div class="card">
+        <span class="card-icon"><span class="card-icon-badge badge-pm">PM</span></span>
+        <div class="card-title">产品经理方向</div>
+        <div class="card-desc">内容待补充。</div>
+        <span class="card-tag">待更新</span>
+      </div>
+      <div class="card">
+        <span class="card-icon"><span class="card-icon-badge badge-ai">AI</span></span>
+        <div class="card-title">AI 工具探索</div>
+        <div class="card-desc">持续学习并实践 AI 工具在产品工作中的应用，探索 AI 辅助需求分析、文档生成与效率提升的可能性。</div>
+        <span class="card-tag" style="background:rgba(56,189,248,0.1);color:var(--accent2);border-color:rgba(56,189,248,0.2)">进行中</span>
+      </div>
+      <div class="card">
+        <span class="card-icon"><span class="card-icon-badge badge-game">GAME</span></span>
+        <div class="card-title">小游戏</div>
+        <div class="card-desc">内置单机与联机小游戏，支持分享链接邀请好友一起玩。</div>
+        <span class="card-tag" style="background:rgba(52,211,153,0.1);color:var(--accent4);border-color:rgba(52,211,153,0.2)">进行中</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Game ── -->
+  <section class="section reveal" id="game">
+    <div class="section-title"><span class="dot"></span>小游戏</div>
+
+    <!-- Mode switcher -->
+    <div class="game-mode-tabs">
+      <button class="game-mode-tab active" data-mode="solo">🎮 单机游戏</button>
+      <button class="game-mode-tab" data-mode="online">🌐 联机游戏</button>
+    </div>
+
+    <!-- Solo sub-tabs -->
+    <div class="game-sub-tabs" id="soloSubTabs">
+      <button class="game-tab active" data-tab="snake">🐍 贪吃蛇</button>
+      <button class="game-tab" data-tab="g1024">🔢 1024</button>
+    </div>
+
+    <!-- Online sub-tabs -->
+    <div class="game-sub-tabs" id="onlineSubTabs" style="display:none">
+      <button class="game-tab" data-tab="dice">🎲 摇骰子</button>
+    </div>
+
+    <!-- ── Snake ── -->
+    <div class="game-panel active" id="panel-snake">
+      <div class="game-wrap">
+        <div class="game-header">
+          <div class="game-title">🐍 贪吃蛇</div>
+          <div class="game-sub">方向键 / WASD 控制 · 看看你能吃多少？</div>
+        </div>
+        <canvas id="snakeCanvas" width="440" height="440"></canvas>
+        <div class="game-score">
+          当前得分 <b id="scoreVal">0</b> &nbsp;·&nbsp; 最高得分 <b id="bestVal">0</b>
+        </div>
+        <div class="game-btns">
+          <button class="btn primary" id="startBtn">开始游戏</button>
+          <button class="btn" id="pauseBtn" disabled>暂停</button>
+        </div>
+        <div class="speed-row">
+          <span class="speed-label">速度：</span>
+          <button class="speed-btn active" data-speed="150">慢</button>
+          <button class="speed-btn" data-speed="100">中</button>
+          <button class="speed-btn" data-speed="60">快</button>
+        </div>
+        <div id="dpad">
+          <div class="dpad-grid">
+            <div></div><button class="dpad-btn" id="dUp">↑</button><div></div>
+            <button class="dpad-btn" id="dLeft">←</button><div></div><button class="dpad-btn" id="dRight">→</button>
+            <div></div><button class="dpad-btn" id="dDown">↓</button><div></div>
+          </div>
+        </div>
+        <!-- Snake leaderboard -->
+        <div class="leaderboard" id="snakeLb">
+          <div class="lb-header">排行榜</div>
+          <div id="snakeLbBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 1024 ── -->
+    <div class="game-panel" id="panel-g1024">
+      <div class="game-wrap">
+        <div class="game-header">
+          <div class="game-title">🔢 1024</div>
+          <div class="game-sub">方向键 / WASD 滑动合并数字 · 挑战 1024！</div>
+        </div>
+        <canvas id="g1024Canvas" width="400" height="400"></canvas>
+        <div class="game-score">
+          当前得分 <b id="g1024ScoreVal">0</b> &nbsp;·&nbsp; 最高得分 <b id="g1024BestVal">0</b>
+        </div>
+        <div class="game-btns">
+          <button class="btn primary" id="g1024StartBtn">新游戏</button>
+        </div>
+        <!-- 1024 leaderboard -->
+        <div class="leaderboard" id="g1024Lb">
+          <div class="lb-header">排行榜</div>
+          <div id="g1024LbBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Dice ── -->
+    <div class="game-panel" id="panel-dice">
+      <div class="game-wrap" style="max-width:520px;margin:0 auto;">
+
+        <!-- 等待创建 -->
+        <div id="diceWaiting">
+          <div class="game-title" style="margin-bottom:8px;">🎲 摇骰子</div>
+          <div class="game-sub">创建房间，邀请好友一起玩</div>
+          <button class="btn primary" id="diceCreateBtn" style="margin:8px auto 0;display:block;">创建房间</button>
+        </div>
+
+        <!-- 房间内 -->
+        <div id="diceRoom" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+            <div class="game-title" style="font-size:17px;">🎲 摇骰子</div>
+            <button class="share-btn" id="diceShareBtn" style="margin:0;padding:6px 14px;font-size:12px;"><span>🔗</span> 邀请好友</button>
+          </div>
+          <div id="dicePlayerList" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;justify-content:center;"></div>
+          <div id="diceStatus" style="font-size:13px;color:var(--muted2);margin-bottom:16px;min-height:20px;text-align:center;"></div>
+          <div id="diceFaceArea" style="display:flex;gap:24px;justify-content:center;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap;"></div>
+          <div class="game-btns">
+            <button class="btn primary" id="diceRollBtn">🎲 摇骰子</button>
+            <button class="btn" id="diceLeaveBtn">离开房间</button>
+          </div>
+          <div id="diceHistory" style="margin-top:20px;"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Visitors ── -->
+  <section class="section reveal" id="visitors">
+    <div class="section-title"><span class="dot"></span>访客记录</div>
+    <div class="visitor-wrap">
+      <div class="visitor-stats">
+        <div class="vstat">
+          <div class="vstat-num" id="totalVisitors">0</div>
+          <div class="vstat-label">总访客数</div>
+        </div>
+        <div class="vstat">
+          <div class="vstat-num" id="todayVisitors">0</div>
+          <div class="vstat-label">今日访客</div>
+        </div>
+        <div class="vstat">
+          <div class="vstat-num" id="uniqueVisitors">0</div>
+          <div class="vstat-label">独立访客</div>
+        </div>
+      </div>
+      <div class="visitor-list" id="visitorList">
+        <div class="visitor-empty">暂无访客记录</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>© 2026 &nbsp;Zero &nbsp;·&nbsp; Built with ❤️ &amp; CatDesk AI</p>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════
+   Reveal animation
+══════════════════════════════════════════ */
+(function() {
+  const obs = new IntersectionObserver((entries, o) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); o.unobserve(e.target); } });
+  }, { threshold: 0.05, rootMargin: '0px 0px 100px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  window.addEventListener('load', () => document.querySelectorAll('.reveal').forEach(el => {
+    if (el.getBoundingClientRect().top < window.innerHeight + 120) el.classList.add('visible');
+  }));
+})();
+
+/* ══════════════════════════════════════════
+   Storage helpers
+══════════════════════════════════════════ */
+function lsGet(key, def) {
+  try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : def; } catch(e) { return def; }
+}
+function lsSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+
+/* ══════════════════════════════════════════
+   Visitor / Nickname system
+══════════════════════════════════════════ */
+const VISITOR_KEY = 'zero_visitors';
+const MY_NICK_KEY = 'zero_my_nickname';
+const MY_ID_KEY   = 'zero_my_id';
+
+function genId() { return 'v' + Date.now() + Math.random().toString(36).slice(2,6); }
+function genDefaultNick() { return '游客' + Math.floor(Math.random() * 9000 + 1000); }
+
+function getMyId() {
+  let id = lsGet(MY_ID_KEY, null);
+  if (!id) { id = genId(); lsSet(MY_ID_KEY, id); }
+  return id;
+}
+
+function getMyNick() { return lsGet(MY_NICK_KEY, null); }
+
+function recordVisit(nickname) {
+  const id = getMyId();
+  const visitors = lsGet(VISITOR_KEY, []);
+  const now = Date.now();
+  // Update or add
+  const idx = visitors.findIndex(v => v.id === id);
+  if (idx >= 0) {
+    visitors[idx].nickname = nickname;
+    visitors[idx].lastVisit = now;
+    visitors[idx].visits = (visitors[idx].visits || 1) + 1;
+  } else {
+    visitors.push({ id, nickname, firstVisit: now, lastVisit: now, visits: 1 });
+  }
+  lsSet(VISITOR_KEY, visitors);
+  return visitors;
+}
+
+function renderVisitors() {
+  const visitors = lsGet(VISITOR_KEY, []);
+  const now = Date.now();
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+
+  // Stats
+  document.getElementById('totalVisitors').textContent = visitors.reduce((s,v) => s + (v.visits||1), 0);
+  document.getElementById('todayVisitors').textContent = visitors.filter(v => v.lastVisit >= todayStart.getTime()).length;
+  document.getElementById('uniqueVisitors').textContent = visitors.length;
+
+  // List (sorted by lastVisit desc)
+  const list = document.getElementById('visitorList');
+  if (!visitors.length) {
+    list.innerHTML = '<div class="visitor-empty">暂无访客记录，快来留下你的足迹吧 👣</div>';
+    return;
+  }
+  const sorted = [...visitors].sort((a,b) => b.lastVisit - a.lastVisit);
+  list.innerHTML = sorted.map(v => {
+    const initial = (v.nickname || '?')[0].toUpperCase();
+    const isToday = v.lastVisit >= todayStart.getTime();
+    const timeStr = formatTime(v.lastVisit);
+    const myId = getMyId();
+    const isMe = v.id === myId;
+    return `<div class="visitor-item">
+      <div class="visitor-avatar">${initial}</div>
+      <div class="visitor-info">
+        <div class="visitor-name">${escHtml(v.nickname)}${isMe ? ' <span style="font-size:11px;color:var(--accent);font-weight:500">(你)</span>' : ''}</div>
+        <div class="visitor-time">最近访问：${timeStr} · 共访问 ${v.visits||1} 次</div>
+      </div>
+      ${isToday ? '<span class="visitor-badge">今日在线</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return '刚刚';
+  if (diff < 3600000) return Math.floor(diff/60000) + ' 分钟前';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' 小时前';
+  return d.getFullYear() + '/' + (d.getMonth()+1) + '/' + d.getDate();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Modal logic
+const modal = document.getElementById('nicknameModal');
+const nicknameInput = document.getElementById('nicknameInput');
+const navVisitor = document.getElementById('navVisitor');
+
+function showModal() {
+  const defaultNick = genDefaultNick();
+  nicknameInput.value = '';
+  nicknameInput.placeholder = defaultNick;
+  modal.classList.add('show');
+  setTimeout(() => nicknameInput.focus(), 300);
+}
+
+function confirmNickname() {
+  const raw = nicknameInput.value.trim();
+  const nick = raw || nicknameInput.placeholder;
+  lsSet(MY_NICK_KEY, nick);
+  modal.classList.remove('show');
+  navVisitor.textContent = '👤 ' + nick;
+  recordVisit(nick);
+  renderVisitors();
+}
+
+document.getElementById('nicknameConfirm').addEventListener('click', confirmNickname);
+nicknameInput.addEventListener('keydown', e => { if (e.key === 'Enter') confirmNickname(); });
+navVisitor.addEventListener('click', showModal);
+
+// On load: check if first visit
+window.addEventListener('load', () => {
+  const nick = getMyNick();
+  if (!nick) {
+    showModal();
+  } else {
+    navVisitor.textContent = '👤 ' + nick;
+    recordVisit(nick);
+    renderVisitors();
+  }
+});
+
+/* ══════════════════════════════════════════
+   Leaderboard helpers
+══════════════════════════════════════════ */
+const SNAKE_LB_KEY = 'zero_snake_lb';
+const G1024_LB_KEY = 'zero_g1024_lb';
+
+function addToLeaderboard(key, score) {
+  if (score <= 0) return;
+  const nick = getMyNick() || genDefaultNick();
+  const lb = lsGet(key, []);
+  lb.push({ nickname: nick, score, time: Date.now() });
+  // Keep only last 30 days
+  const cutoff = Date.now() - 30 * 86400000;
+  const filtered = lb.filter(e => e.time >= cutoff);
+  // Sort desc, keep top 5
+  filtered.sort((a,b) => b.score - a.score);
+  lsSet(key, filtered.slice(0, 20)); // store more, display top 5
+}
+
+function renderLeaderboard(key, bodyId) {
+  const lb = lsGet(key, []);
+  const cutoff = Date.now() - 30 * 86400000;
+  const valid = lb.filter(e => e.time >= cutoff).sort((a,b) => b.score - a.score).slice(0,5);
+  const body = document.getElementById(bodyId);
+  if (!valid.length) {
+    body.innerHTML = '<div class="lb-empty">暂无记录，快来挑战吧！</div>';
+    return;
+  }
+  const rankClass = ['gold','silver','bronze','',''];
+  const rankLabel = ['🥇','🥈','🥉','4','5'];
+  body.innerHTML = valid.map((e,i) => `
+    <div class="lb-row">
+      <span class="lb-rank ${rankClass[i]}">${rankLabel[i]}</span>
+      <span class="lb-name">${escHtml(e.nickname)}</span>
+      <span class="lb-score">${e.score}</span>
+      <span class="lb-time">${formatTime(e.time)}</span>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   Game tabs
+══════════════════════════════════════════ */
+function activateGameTab(tab) {
+  document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  if (tab.dataset.tab === 'snake') renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
+  if (tab.dataset.tab === 'g1024') renderLeaderboard(G1024_LB_KEY, 'g1024LbBody');
+}
+
+document.querySelectorAll('.game-tab').forEach(tab => {
+  tab.addEventListener('click', () => activateGameTab(tab));
+});
+
+// Mode tabs (单机 / 联机)
+document.querySelectorAll('.game-mode-tab').forEach(modeTab => {
+  modeTab.addEventListener('click', () => {
+    document.querySelectorAll('.game-mode-tab').forEach(t => t.classList.remove('active'));
+    modeTab.classList.add('active');
+    const mode = modeTab.dataset.mode;
+    document.getElementById('soloSubTabs').style.display = mode === 'solo' ? 'flex' : 'none';
+    document.getElementById('onlineSubTabs').style.display = mode === 'online' ? 'flex' : 'none';
+    // Activate first tab of the selected mode
+    const firstTab = document.querySelector(
+      mode === 'solo' ? '#soloSubTabs .game-tab' : '#onlineSubTabs .game-tab'
+    );
+    if (firstTab) activateGameTab(firstTab);
+  });
+});
+
+/* ══════════════════════════════════════════
+   Snake game
+══════════════════════════════════════════ */
+const canvas = document.getElementById('snakeCanvas');
+const ctx    = canvas.getContext('2d');
+const CELL = 22, COLS = Math.floor(canvas.width / CELL), ROWS = Math.floor(canvas.height / CELL);
+let snake, dir, nextDir, food, particles = [];
+let score = 0, best = 0, loop = null, running = false, paused = false;
+let speed = 150;
+
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speed = +btn.dataset.speed;
+    if (running && !paused) { clearInterval(loop); loop = setInterval(snakeStep, speed); }
+  });
+});
+
+function drawIdle() {
+  ctx.fillStyle = '#06060f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)'; ctx.lineWidth = 0.5;
+  for (let x=0;x<=COLS;x++){ctx.beginPath();ctx.moveTo(x*CELL,0);ctx.lineTo(x*CELL,canvas.height);ctx.stroke();}
+  for (let y=0;y<=ROWS;y++){ctx.beginPath();ctx.moveTo(0,y*CELL);ctx.lineTo(canvas.width,y*CELL);ctx.stroke();}
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 18px PingFang SC, sans-serif';
+  ctx.fillStyle = 'rgba(124,106,247,0.7)';
+  ctx.fillText('🐍', canvas.width/2, canvas.height/2 - 28);
+  ctx.font = 'bold 15px PingFang SC, sans-serif';
+  ctx.fillStyle = 'rgba(200,200,220,0.6)';
+  ctx.fillText('点击「开始游戏」', canvas.width/2, canvas.height/2 + 4);
+  ctx.font = '12px PingFang SC, sans-serif';
+  ctx.fillStyle = 'rgba(107,107,138,0.7)';
+  ctx.fillText('方向键 / WASD 控制', canvas.width/2, canvas.height/2 + 26);
+}
+
+function initSnake() {
+  snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  dir = {x:1,y:0}; nextDir = {x:1,y:0};
+  score = 0; particles = [];
+  placeFood(); drawSnake();
+  document.getElementById('scoreVal').textContent = 0;
+}
+
+function placeFood() {
+  let p;
+  do { p = {x: Math.floor(Math.random()*COLS), y: Math.floor(Math.random()*ROWS)}; }
+  while (snake.some(s => s.x===p.x && s.y===p.y));
+  food = p;
+}
+
+function spawnParticles(x, y) {
+  for (let i = 0; i < 8; i++) {
+    const angle = (Math.PI * 2 / 8) * i;
+    particles.push({ x: x*CELL+CELL/2, y: y*CELL+CELL/2, vx: Math.cos(angle)*2.5, vy: Math.sin(angle)*2.5, life: 1 });
+  }
+}
+
+function snakeStep() {
+  dir = nextDir;
+  const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+  if (head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)) {
+    endSnake(); return;
+  }
+  snake.unshift(head);
+  if (head.x===food.x && head.y===food.y) {
+    score++;
+    if (score > best) best = score;
+    document.getElementById('scoreVal').textContent = score;
+    document.getElementById('bestVal').textContent = best;
+    spawnParticles(food.x, food.y);
+    placeFood();
+  } else {
+    snake.pop();
+  }
+  drawSnake();
+}
+
+function drawSnake() {
+  ctx.fillStyle = '#06060f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x <= COLS; x++) {
+    ctx.beginPath(); ctx.moveTo(x*CELL, 0); ctx.lineTo(x*CELL, canvas.height); ctx.stroke();
+  }
+  for (let y = 0; y <= ROWS; y++) {
+    ctx.beginPath(); ctx.moveTo(0, y*CELL); ctx.lineTo(canvas.width, y*CELL); ctx.stroke();
+  }
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = '#f472b6';
+    ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+    p.x += p.vx; p.y += p.vy; p.life -= 0.08;
+  });
+  ctx.globalAlpha = 1;
+  const fx = food.x*CELL + CELL/2, fy = food.y*CELL + CELL/2;
+  const grd = ctx.createRadialGradient(fx, fy, 0, fx, fy, CELL);
+  grd.addColorStop(0, 'rgba(244,114,182,0.4)');
+  grd.addColorStop(1, 'transparent');
+  ctx.fillStyle = grd;
+  ctx.fillRect(food.x*CELL - CELL, food.y*CELL - CELL, CELL*3, CELL*3);
+  ctx.fillStyle = '#f472b6';
+  ctx.shadowColor = '#f472b6'; ctx.shadowBlur = 14;
+  ctx.beginPath(); ctx.arc(fx, fy, CELL/2 - 2, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  snake.forEach((seg, i) => {
+    const t = i / Math.max(snake.length - 1, 1);
+    const r = Math.round(124 * (1-t) + 56 * t);
+    const g = Math.round(106 * (1-t) + 189 * t);
+    const b = Math.round(247 * (1-t) + 248 * t);
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    if (i === 0) { ctx.shadowColor = 'rgba(124,106,247,0.9)'; ctx.shadowBlur = 16; }
+    else { ctx.shadowBlur = 0; }
+    const pad = i === 0 ? 1 : 2;
+    ctx.beginPath();
+    ctx.roundRect(seg.x*CELL+pad, seg.y*CELL+pad, CELL-pad*2, CELL-pad*2, i===0 ? 5 : 4);
+    ctx.fill();
+  });
+  ctx.shadowBlur = 0;
+}
+
+function endSnake() {
+  clearInterval(loop); running = false; paused = false;
+  addToLeaderboard(SNAKE_LB_KEY, score);
+  renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
+  document.getElementById('startBtn').textContent = '再来一局';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('pauseBtn').textContent = '暂停';
+  ctx.fillStyle = 'rgba(6,6,15,0.82)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 26px PingFang SC, sans-serif';
+  ctx.fillText('游戏结束', canvas.width/2, canvas.height/2 - 20);
+  ctx.font = '15px PingFang SC, sans-serif';
+  ctx.fillStyle = '#6b6b8a';
+  ctx.fillText('得分：' + score + '  最高：' + best, canvas.width/2, canvas.height/2 + 14);
+  ctx.font = '13px PingFang SC, sans-serif';
+  ctx.fillStyle = '#38bdf8';
+  ctx.fillText('点击「再来一局」重新开始', canvas.width/2, canvas.height/2 + 42);
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (running) return;
+  initSnake(); running = true; paused = false;
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('pauseBtn').disabled = false;
+  loop = setInterval(snakeStep, speed);
+});
+
+document.getElementById('pauseBtn').addEventListener('click', () => {
+  if (!running) return;
+  if (!paused) {
+    clearInterval(loop); paused = true;
+    document.getElementById('pauseBtn').textContent = '继续';
+  } else {
+    loop = setInterval(snakeStep, speed); paused = false;
+    document.getElementById('pauseBtn').textContent = '暂停';
+  }
+});
+
+document.addEventListener('keydown', e => {
+  const map = {
+    ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1}, ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0},
+    w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0},
+    W:{x:0,y:-1}, S:{x:0,y:1}, A:{x:-1,y:0}, D:{x:1,y:0},
+  };
+  if (map[e.key]) {
+    const nd = map[e.key];
+    if (nd.x !== -dir.x || nd.y !== -dir.y) nextDir = nd;
+    if (e.key.startsWith('Arrow')) e.preventDefault();
+  }
+});
+
+if ('ontouchstart' in window) {
+  document.getElementById('dpad').style.display = 'block';
+  [{id:'dUp',d:{x:0,y:-1}},{id:'dDown',d:{x:0,y:1}},{id:'dLeft',d:{x:-1,y:0}},{id:'dRight',d:{x:1,y:0}}]
+    .forEach(({id, d}) => {
+      document.getElementById(id).addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (d.x !== -dir.x || d.y !== -dir.y) nextDir = d;
+      }, {passive:false});
+    });
+}
+
+drawIdle();
+renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
+
+/* ══════════════════════════════════════════
+   1024 game
+══════════════════════════════════════════ */
+(function() {
+  const c = document.getElementById('g1024Canvas');
+  const cx = c.getContext('2d');
+  const SIZE = 4;
+  const TILE = Math.floor(c.width / SIZE);
+  const GAP = 6;
+  let board, g1024Score, g1024Best, g1024Running;
+
+  const COLORS = {
+    0:    ['#1a1a2e','#444'],
+    2:    ['#1e2a3a','#7dd3fc'],
+    4:    ['#1a2e3a','#38bdf8'],
+    8:    ['#1e3a2a','#6ee7b7'],
+    16:   ['#2a3a1e','#a3e635'],
+    32:   ['#3a2a1e','#fbbf24'],
+    64:   ['#3a1e1e','#f97316'],
+    128:  ['#3a1e2a','#f472b6'],
+    256:  ['#2a1e3a','#c084fc'],
+    512:  ['#1e1e3a','#818cf8'],
+    1024: ['#1e2a3a','#e0d7ff'],
+  };
+
+  function getColor(v) {
+    return COLORS[v] || ['#2a1e3a','#fff'];
+  }
+
+  function initG1024() {
+    board = Array.from({length:SIZE}, () => Array(SIZE).fill(0));
+    g1024Score = 0; g1024Running = true;
+    addTile(); addTile();
+    drawG1024();
+    document.getElementById('g1024ScoreVal').textContent = 0;
+  }
+
+  function addTile() {
+    const empty = [];
+    for (let r=0;r<SIZE;r++) for (let c2=0;c2<SIZE;c2++) if (!board[r][c2]) empty.push([r,c2]);
+    if (!empty.length) return;
+    const [r,c2] = empty[Math.floor(Math.random()*empty.length)];
+    board[r][c2] = Math.random() < 0.9 ? 2 : 4;
+  }
+
+  function drawG1024() {
+    cx.fillStyle = '#06060f';
+    cx.fillRect(0,0,c.width,c.height);
+    for (let r=0;r<SIZE;r++) {
+      for (let cc=0;cc<SIZE;cc++) {
+        const v = board[r][cc];
+        const x = cc*TILE + GAP, y = r*TILE + GAP;
+        const w = TILE - GAP*2, h = TILE - GAP*2;
+        const [bg, fg] = getColor(v);
+        cx.fillStyle = bg;
+        cx.beginPath(); cx.roundRect(x,y,w,h,10); cx.fill();
+        if (v) {
+          cx.fillStyle = fg;
+          const fs = v >= 1000 ? 22 : v >= 100 ? 26 : 30;
+          cx.font = `bold ${fs}px Helvetica Neue, Arial, sans-serif`;
+          cx.textAlign = 'center'; cx.textBaseline = 'middle';
+          cx.fillText(v, x+w/2, y+h/2);
+        }
+      }
+    }
+  }
+
+  function slide(row) {
+    let arr = row.filter(v => v);
+    let merged = false;
+    for (let i=0;i<arr.length-1;i++) {
+      if (arr[i] === arr[i+1] && !merged) {
+        arr[i] *= 2;
+        g1024Score += arr[i];
+        arr.splice(i+1,1);
+        merged = true;
+      } else { merged = false; }
+    }
+    while (arr.length < SIZE) arr.push(0);
+    return arr;
+  }
+
+  function move(dir) {
+    if (!g1024Running) return;
+    let moved = false;
+    const prev = board.map(r => [...r]);
+    if (dir === 'left') {
+      for (let r=0;r<SIZE;r++) { const n = slide(board[r]); if (n.join()!==board[r].join()) moved=true; board[r]=n; }
+    } else if (dir === 'right') {
+      for (let r=0;r<SIZE;r++) { const n = slide([...board[r]].reverse()).reverse(); if (n.join()!==board[r].join()) moved=true; board[r]=n; }
+    } else if (dir === 'up') {
+      for (let c2=0;c2<SIZE;c2++) {
+        const col = board.map(r=>r[c2]);
+        const n = slide(col);
+        if (n.join()!==col.join()) moved=true;
+        for (let r=0;r<SIZE;r++) board[r][c2]=n[r];
+      }
+    } else if (dir === 'down') {
+      for (let c2=0;c2<SIZE;c2++) {
+        const col = board.map(r=>r[c2]).reverse();
+        const n = slide(col).reverse();
+        const orig = board.map(r=>r[c2]);
+        if (n.join()!==orig.join()) moved=true;
+        for (let r=0;r<SIZE;r++) board[r][c2]=n[r];
+      }
+    }
+    if (moved) {
+      addTile();
+      if (g1024Score > g1024Best) g1024Best = g1024Score;
+      document.getElementById('g1024ScoreVal').textContent = g1024Score;
+      document.getElementById('g1024BestVal').textContent = g1024Best;
+      drawG1024();
+      if (isGameOver()) {
+        g1024Running = false;
+        addToLeaderboard(G1024_LB_KEY, g1024Score);
+        renderLeaderboard(G1024_LB_KEY, 'g1024LbBody');
+        cx.fillStyle = 'rgba(6,6,15,0.82)';
+        cx.fillRect(0,0,c.width,c.height);
+        cx.textAlign='center'; cx.textBaseline='middle';
+        cx.fillStyle='#fff'; cx.font='bold 26px PingFang SC, sans-serif';
+        cx.fillText('游戏结束', c.width/2, c.height/2-16);
+        cx.fillStyle='#38bdf8'; cx.font='14px PingFang SC, sans-serif';
+        cx.fillText('得分：'+g1024Score, c.width/2, c.height/2+18);
+      }
+    }
+  }
+
+  function isGameOver() {
+    for (let r=0;r<SIZE;r++) for (let c2=0;c2<SIZE;c2++) {
+      if (!board[r][c2]) return false;
+      if (r<SIZE-1 && board[r][c2]===board[r+1][c2]) return false;
+      if (c2<SIZE-1 && board[r][c2]===board[r][c2+1]) return false;
+    }
+    return true;
+  }
+
+  document.getElementById('g1024StartBtn').addEventListener('click', initG1024);
+
+  // Keyboard for 1024 (only when panel active)
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('panel-g1024').classList.contains('active')) return;
+    const map = { ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down',
+                  a:'left', d:'right', w:'up', s:'down', A:'left', D:'right', W:'up', S:'down' };
+    if (map[e.key]) { e.preventDefault(); move(map[e.key]); }
+  });
+
+  // Touch swipe for 1024
+  let tx0, ty0;
+  c.addEventListener('touchstart', e => { tx0=e.touches[0].clientX; ty0=e.touches[0].clientY; }, {passive:true});
+  c.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx0;
+    const dy = e.changedTouches[0].clientY - ty0;
+    if (Math.abs(dx) > Math.abs(dy)) move(dx>0?'right':'left');
+    else move(dy>0?'down':'up');
+  }, {passive:true});
+
+  // Draw idle state
+  cx.fillStyle = '#06060f'; cx.fillRect(0,0,c.width,c.height);
+  cx.textAlign='center'; cx.textBaseline='middle';
+  cx.fillStyle='rgba(56,189,248,0.7)'; cx.font='bold 32px Helvetica Neue, sans-serif';
+  cx.fillText('1024', c.width/2, c.height/2-20);
+  cx.fillStyle='rgba(200,200,220,0.5)'; cx.font='14px PingFang SC, sans-serif';
+  cx.fillText('点击「新游戏」开始', c.width/2, c.height/2+16);
+
+  renderLeaderboard(G1024_LB_KEY, 'g1024LbBody');
+})();
+
+/* ══════════════════════════════════════════
+   Dice – Supabase Realtime 联机摇骰子
+══════════════════════════════════════════ */
+(function() {
+  const SUPABASE_URL = 'https://vfhpkxcdlbpyjwgaopav.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_IZCRV-6enHOLSd5Wdd6prA_D3AHEYoC';
+
+  // ── 状态 ──
+  let channel = null;
+  let roomId  = null;
+  let myId    = null;
+  let players = {};   // { id: { nickname, rolled, value } }
+  let roundHistory = [];
+  let rolling = false;
+
+  // ── DOM ──
+  const elWaiting    = document.getElementById('diceWaiting');
+  const elRoom       = document.getElementById('diceRoom');
+  const elPlayerList = document.getElementById('dicePlayerList');
+  const elStatus     = document.getElementById('diceStatus');
+  const elFaceArea   = document.getElementById('diceFaceArea');
+  const elHistory    = document.getElementById('diceHistory');
+  const btnCreate    = document.getElementById('diceCreateBtn');
+  const btnRoll      = document.getElementById('diceRollBtn');
+  const btnLeave     = document.getElementById('diceLeaveBtn');
+  const btnShare     = document.getElementById('diceShareBtn');
+
+  // ── 工具 ──
+  function genRoomId() { return Math.random().toString(36).slice(2,8).toUpperCase(); }
+  function copyText(text, btn) {
+    const restore = btn.innerHTML;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = '<span>✅</span> 已复制';
+        setTimeout(() => { btn.innerHTML = restore; }, 2000);
+      });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      btn.innerHTML = '<span>✅</span> 已复制';
+      setTimeout(() => { btn.innerHTML = restore; }, 2000);
+    }
+  }
+
+  // 骰子 SVG（1-6 点）
+  function diceSVG(val, size, highlight) {
+    const dots = {
+      1: [[50,50]],
+      2: [[25,25],[75,75]],
+      3: [[25,25],[50,50],[75,75]],
+      4: [[25,25],[75,25],[25,75],[75,75]],
+      5: [[25,25],[75,25],[50,50],[25,75],[75,75]],
+      6: [[25,25],[75,25],[25,50],[75,50],[25,75],[75,75]],
+    };
+    const color = highlight === 'win' ? '#34d399' : highlight === 'lose' ? '#f472b6' : '#7c6af7';
+    const circles = (dots[val]||[]).map(([cx,cy]) =>
+      `<circle cx="${cx}" cy="${cy}" r="7" fill="${color}"/>`).join('');
+    return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="18" fill="#111120" stroke="${color}" stroke-width="3"/>
+      ${circles}
+    </svg>`;
+  }
+
+  // ── 渲染 ──
+  function renderPlayers() {
+    const ids = Object.keys(players);
+    elPlayerList.innerHTML = ids.map(id => {
+      const p = players[id];
+      const isMe = id === myId;
+      const initial = (p.nickname||'?')[0].toUpperCase();
+      const rolledDot = p.rolled
+        ? `<span style="width:7px;height:7px;border-radius:50%;background:var(--accent4);display:inline-block;margin-left:4px;"></span>`
+        : '';
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;position:relative;">
+          ${escHtml(initial)}
+          ${rolledDot}
+        </div>
+        <div style="font-size:11px;color:${isMe?'var(--accent)':'var(--muted2)'};max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(p.nickname)}${isMe?' (你)':''}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderFaces(results) {
+    // results: [ { nickname, value, highlight } ]
+    elFaceArea.innerHTML = results.map(r => `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        ${diceSVG(r.value, 80, r.highlight)}
+        <div style="font-size:12px;color:var(--muted2);">${escHtml(r.nickname)}</div>
+        <div style="font-size:18px;font-weight:800;color:${r.highlight==='win'?'var(--accent4)':r.highlight==='lose'?'var(--accent3)':'var(--muted2)'};">${r.value} 点</div>
+      </div>`).join('');
+  }
+
+  function renderHistory() {
+    if (!roundHistory.length) { elHistory.innerHTML = ''; return; }
+    const rows = roundHistory.slice(-5).reverse().map((r,i) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:12px;margin-bottom:6px;">
+        <span style="color:var(--muted);">第 ${roundHistory.length - i} 局</span>
+        <span style="color:var(--text);">${r.summary}</span>
+        <span style="color:var(--accent4);">${r.winner} 胜</span>
+      </div>`).join('');
+    elHistory.innerHTML = `<div style="font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">战绩</div>${rows}`;
+  }
+
+  function setStatus(msg) { elStatus.textContent = msg; }
+
+  function checkAllRolled() {
+    const ids = Object.keys(players);
+    if (ids.length < 2) return false;
+    return ids.every(id => players[id].rolled);
+  }
+
+  function resolveRound() {
+    const ids = Object.keys(players);
+    const sorted = [...ids].sort((a,b) => players[b].value - players[a].value);
+    const maxVal = players[sorted[0]].value;
+    const winners = sorted.filter(id => players[id].value === maxVal);
+    const results = ids.map(id => ({
+      nickname: players[id].nickname,
+      value: players[id].value,
+      highlight: winners.includes(id) ? (winners.length > 1 ? '' : 'win') : 'lose',
+    }));
+    renderFaces(results);
+    const winnerNames = winners.map(id => players[id].nickname).join('、');
+    const summary = ids.map(id => `${players[id].nickname} ${players[id].value}`).join(' vs ');
+    if (winners.length > 1) {
+      setStatus(`🤝 平局！${winnerNames} 均为 ${maxVal} 点`);
+    } else {
+      setStatus(`🏆 ${winnerNames} 获胜！`);
+    }
+    roundHistory.push({ summary, winner: winnerNames });
+    renderHistory();
+    // 重置 rolled 状态，准备下一局
+    setTimeout(() => {
+      ids.forEach(id => { players[id].rolled = false; players[id].value = null; });
+      renderPlayers();
+      elFaceArea.innerHTML = '';
+      setStatus('所有人已就绪，点击「摇骰子」开始新一局');
+      btnRoll.disabled = false;
+      rolling = false;
+    }, 3000);
+  }
+
+  // ── Supabase 连接 ──
+  function joinChannel(rid) {
+    roomId = rid;
+    myId = getMyId();
+    const nick = getMyNick() || genDefaultNick();
+
+    // 动态加载 Supabase JS SDK
+    if (!window.__supabaseLoaded) {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+      s.onload = () => { window.__supabaseLoaded = true; connectChannel(rid, nick); };
+      document.head.appendChild(s);
+    } else {
+      connectChannel(rid, nick);
+    }
+  }
+
+  function connectChannel(rid, nick) {
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    channel = client.channel('dice-room-' + rid, { config: { broadcast: { self: true } } });
+
+    channel
+      .on('broadcast', { event: 'join' }, ({ payload }) => {
+        if (!players[payload.id]) {
+          players[payload.id] = { nickname: payload.nickname, rolled: false, value: null };
+          renderPlayers();
+          setStatus(Object.keys(players).length < 2 ? '等待好友加入…' : '所有人已就绪，点击「摇骰子」开始！');
+        }
+      })
+      .on('broadcast', { event: 'leave' }, ({ payload }) => {
+        delete players[payload.id];
+        renderPlayers();
+        setStatus(Object.keys(players).length < 2 ? '对方已离开，等待好友加入…' : '');
+      })
+      .on('broadcast', { event: 'roll' }, ({ payload }) => {
+        if (players[payload.id]) {
+          players[payload.id].rolled = true;
+          players[payload.id].value  = payload.value;
+          renderPlayers();
+          const notRolled = Object.keys(players).filter(id => !players[id].rolled);
+          if (notRolled.length > 0) {
+            setStatus(`等待 ${notRolled.map(id=>players[id].nickname).join('、')} 摇骰子…`);
+          }
+          if (checkAllRolled()) resolveRound();
+        }
+      })
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') {
+          // 广播自己加入
+          channel.send({ type: 'broadcast', event: 'join', payload: { id: myId, nickname: nick } });
+          players[myId] = { nickname: nick, rolled: false, value: null };
+          renderPlayers();
+          setStatus('等待好友加入…');
+          // 显示房间 UI
+          elWaiting.style.display = 'none';
+          elRoom.style.display = 'block';
+          btnRoll.disabled = false;
+        }
+      });
+  }
+
+  function leaveChannel() {
+    if (channel) {
+      channel.send({ type: 'broadcast', event: 'leave', payload: { id: myId } });
+      channel.unsubscribe();
+      channel = null;
+    }
+    players = {}; roomId = null; rolling = false;
+    elRoom.style.display = 'none';
+    elWaiting.style.display = 'block';
+    elFaceArea.innerHTML = '';
+    elHistory.innerHTML = '';
+    setStatus('');
+    // 清除 URL 中的 room 参数
+    const url = new URL(window.location.href);
+    url.searchParams.delete('room');
+    history.replaceState(null, '', url.toString());
+  }
+
+  // ── 按钮事件 ──
+  btnCreate.addEventListener('click', () => {
+    const rid = genRoomId();
+    const url = new URL(window.location.href);
+    url.searchParams.set('room', rid);
+    history.replaceState(null, '', url.toString());
+    joinChannel(rid);
+  });
+
+  btnShare.addEventListener('click', () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('room', roomId);
+    url.hash = 'game';
+    copyText(url.toString(), btnShare);
+  });
+
+  btnRoll.addEventListener('click', () => {
+    if (rolling || !channel) return;
+    if (players[myId] && players[myId].rolled) { setStatus('你已经摇过了，等待其他人…'); return; }
+    if (Object.keys(players).length < 2) { setStatus('至少需要 2 人才能开始！'); return; }
+    rolling = true;
+    btnRoll.disabled = true;
+    // 动画：快速随机显示 0.8s 后定格
+    let tick = 0;
+    const anim = setInterval(() => {
+      const fakeVal = Math.ceil(Math.random() * 6);
+      elFaceArea.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        ${diceSVG(fakeVal, 80, '')}
+        <div style="font-size:12px;color:var(--muted2);">摇动中…</div>
+      </div>`;
+      tick++;
+      if (tick > 12) {
+        clearInterval(anim);
+        const finalVal = Math.ceil(Math.random() * 6);
+        channel.send({ type: 'broadcast', event: 'roll', payload: { id: myId, value: finalVal } });
+      }
+    }, 65);
+  });
+
+  btnLeave.addEventListener('click', leaveChannel);
+
+  // ── 页面加载时检查 URL 是否带 room 参数（好友点链接进来）──
+  window.addEventListener('load', () => {
+    const params = new URLSearchParams(window.location.search);
+    const rid = params.get('room');
+    if (rid) {
+      // 切换到联机游戏 tab
+      const onlineTab = document.querySelector('.game-mode-tab[data-mode="online"]');
+      if (onlineTab) onlineTab.click();
+      // 等昵称确认后再加入（昵称弹窗可能还没关）
+      const tryJoin = () => {
+        if (getMyNick()) { joinChannel(rid); }
+        else { setTimeout(tryJoin, 500); }
+      };
+      tryJoin();
+    }
+  });
+})();
+</script>
+</body>
+</html>
