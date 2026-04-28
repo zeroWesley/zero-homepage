@@ -1582,12 +1582,33 @@ renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
       // 切换到联机游戏 tab
       const onlineTab = document.querySelector('.game-mode-tab[data-mode="online"]');
       if (onlineTab) onlineTab.click();
-      // 等昵称确认后再加入（昵称弹窗可能还没关）
-      const tryJoin = () => {
-        if (getMyNick()) { joinChannel(rid); }
-        else { setTimeout(tryJoin, 500); }
-      };
-      tryJoin();
+      // 滚动到游戏区
+      setTimeout(() => {
+        const gameSection = document.getElementById('game');
+        if (gameSection) gameSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+      // 自动填充房间号到输入框并高亮提示
+      const input = document.getElementById('diceJoinInput');
+      if (input) {
+        input.value = rid.toUpperCase();
+        input.style.borderColor = 'var(--accent)';
+        input.style.boxShadow = '0 0 0 3px rgba(124,106,247,0.25)';
+      }
+      // 在输入框下方显示提示文字
+      const joinBtn = document.getElementById('diceJoinBtn');
+      if (joinBtn) {
+        joinBtn.style.background = 'var(--accent)';
+        joinBtn.style.color = '#fff';
+        // 在按钮旁加提示
+        const hint = document.createElement('div');
+        hint.id = 'diceJoinHint';
+        hint.textContent = '好友邀请你加入，点击「加入」进入房间';
+        hint.style.cssText = 'font-size:12px;color:var(--accent);margin-top:8px;text-align:center;';
+        const joinRow = input.parentElement;
+        if (joinRow && !document.getElementById('diceJoinHint')) {
+          joinRow.insertAdjacentElement('afterend', hint);
+        }
+      }
     }
   });
 })();
