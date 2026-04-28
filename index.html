@@ -1464,6 +1464,24 @@ renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
           renderPlayers();
           setStatus(Object.keys(players).length < 2 ? '等待好友加入…' : '所有人已就绪，点击「摇骰子」开始！');
         }
+        // 收到新人加入，回复自己的状态让新人能看到我
+        if (payload.id !== myId) {
+          channel.send({ type: 'broadcast', event: 'pong', payload: { id: myId, nickname: nick, rolled: players[myId]?.rolled || false, value: players[myId]?.value || null } });
+        }
+      })
+      .on('broadcast', { event: 'ping' }, ({ payload }) => {
+        // 新人发来 ping，回复自己当前状态
+        if (payload.id !== myId) {
+          channel.send({ type: 'broadcast', event: 'pong', payload: { id: myId, nickname: nick, rolled: players[myId]?.rolled || false, value: players[myId]?.value || null } });
+        }
+      })
+      .on('broadcast', { event: 'pong' }, ({ payload }) => {
+        // 收到其他人的状态回复，更新本地玩家列表
+        if (!players[payload.id]) {
+          players[payload.id] = { nickname: payload.nickname, rolled: payload.rolled, value: payload.value };
+          renderPlayers();
+          setStatus(Object.keys(players).length < 2 ? '等待好友加入…' : '所有人已就绪，点击「摇骰子」开始！');
+        }
       })
       .on('broadcast', { event: 'leave' }, ({ payload }) => {
         delete players[payload.id];
@@ -1494,6 +1512,10 @@ renderLeaderboard(SNAKE_LB_KEY, 'snakeLbBody');
           elWaiting.style.display = 'none';
           elRoom.style.display = 'block';
           btnRoll.disabled = false;
+          // 发送 ping，让房间里已有的人回复状态（处理后加入的情况）
+          setTimeout(() => {
+            channel.send({ type: 'broadcast', event: 'ping', payload: { id: myId } });
+          }, 300);
         }
       });
   }
