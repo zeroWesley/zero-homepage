@@ -741,11 +741,12 @@ function lsSet(key, val) {
 }
 
 /* ══════════════════════════════════════════
-   Visitor / Nickname system
+   Visitor / Nickname system  (Supabase DB)
 ══════════════════════════════════════════ */
-const VISITOR_KEY = 'zero_visitors';
 const MY_NICK_KEY = 'zero_my_nickname';
 const MY_ID_KEY   = 'zero_my_id';
+const SB_URL      = 'https://vfhpkxcdlbpyjwgaopav.supabase.co';
+const SB_KEY      = 'sb_publishable_IZCRV-6enHOLSd5Wdd6prA_D3AHEYoC';
 
 function genId() { return 'v' + Date.now() + Math.random().toString(36).slice(2,6); }
 function genDefaultNick() { return '游客' + Math.floor(Math.random() * 9000 + 1000); }
@@ -758,55 +759,70 @@ function getMyId() {
 
 function getMyNick() { return lsGet(MY_NICK_KEY, null); }
 
-function recordVisit(nickname) {
+async function recordVisit(nickname) {
   const id = getMyId();
-  const visitors = lsGet(VISITOR_KEY, []);
-  const now = Date.now();
-  // Update or add
-  const idx = visitors.findIndex(v => v.id === id);
-  if (idx >= 0) {
-    visitors[idx].nickname = nickname;
-    visitors[idx].lastVisit = now;
-    visitors[idx].visits = (visitors[idx].visits || 1) + 1;
-  } else {
-    visitors.push({ id, nickname, firstVisit: now, lastVisit: now, visits: 1 });
-  }
-  lsSet(VISITOR_KEY, visitors);
-  return visitors;
+  const now = new Date().toISOString();
+  try {
+    // 先查是否已存在
+    const getRes = await fetch(`${SB_URL}/rest/v1/visitors?id=eq.${encodeURIComponent(id)}&select=visits`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+    const existing = await getRes.json();
+    if (existing && existing.length > 0) {
+      // 已存在：更新 nickname、last_visit、visits+1
+      await fetch(`${SB_URL}/rest/v1/visitors?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ nickname, last_visit: now, visits: (existing[0].visits || 1) + 1 })
+      });
+    } else {
+      // 新访客：插入
+      await fetch(`${SB_URL}/rest/v1/visitors`, {
+        method: 'POST',
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ id, nickname, first_visit: now, last_visit: now, visits: 1 })
+      });
+    }
+  } catch(e) { console.warn('recordVisit error', e); }
 }
 
-function renderVisitors() {
-  const visitors = lsGet(VISITOR_KEY, []);
-  const now = Date.now();
+async function renderVisitors() {
+  const myId = getMyId();
   const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-
-  // Stats
-  document.getElementById('totalVisitors').textContent = visitors.reduce((s,v) => s + (v.visits||1), 0);
-  document.getElementById('todayVisitors').textContent = visitors.filter(v => v.lastVisit >= todayStart.getTime()).length;
-  document.getElementById('uniqueVisitors').textContent = visitors.length;
-
-  // List (sorted by lastVisit desc)
   const list = document.getElementById('visitorList');
-  if (!visitors.length) {
-    list.innerHTML = '<div class="visitor-empty">暂无访客记录，快来留下你的足迹吧 👣</div>';
-    return;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/visitors?select=*&order=last_visit.desc&limit=50`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+    const visitors = await res.json();
+    if (!Array.isArray(visitors) || !visitors.length) {
+      list.innerHTML = '<div class="visitor-empty">暂无访客记录，快来留下你的足迹吧 👣</div>';
+      document.getElementById('totalVisitors').textContent = '0';
+      document.getElementById('todayVisitors').textContent = '0';
+      document.getElementById('uniqueVisitors').textContent = '0';
+      return;
+    }
+    document.getElementById('totalVisitors').textContent = visitors.reduce((s,v) => s + (v.visits||1), 0);
+    document.getElementById('todayVisitors').textContent = visitors.filter(v => new Date(v.last_visit) >= todayStart).length;
+    document.getElementById('uniqueVisitors').textContent = visitors.length;
+    list.innerHTML = visitors.map(v => {
+      const initial = (v.nickname || '?')[0].toUpperCase();
+      const isToday = new Date(v.last_visit) >= todayStart;
+      const timeStr = formatTime(new Date(v.last_visit).getTime());
+      const isMe = v.id === myId;
+      return `<div class="visitor-item">
+        <div class="visitor-avatar">${initial}</div>
+        <div class="visitor-info">
+          <div class="visitor-name">${escHtml(v.nickname)}${isMe ? ' <span style="font-size:11px;color:var(--accent);font-weight:500">(你)</span>' : ''}</div>
+          <div class="visitor-time">最近访问：${timeStr} · 共访问 ${v.visits||1} 次</div>
+        </div>
+        ${isToday ? '<span class="visitor-badge">今日在线</span>' : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.warn('renderVisitors error', e);
+    list.innerHTML = '<div class="visitor-empty">加载访客记录失败，请稍后刷新</div>';
   }
-  const sorted = [...visitors].sort((a,b) => b.lastVisit - a.lastVisit);
-  list.innerHTML = sorted.map(v => {
-    const initial = (v.nickname || '?')[0].toUpperCase();
-    const isToday = v.lastVisit >= todayStart.getTime();
-    const timeStr = formatTime(v.lastVisit);
-    const myId = getMyId();
-    const isMe = v.id === myId;
-    return `<div class="visitor-item">
-      <div class="visitor-avatar">${initial}</div>
-      <div class="visitor-info">
-        <div class="visitor-name">${escHtml(v.nickname)}${isMe ? ' <span style="font-size:11px;color:var(--accent);font-weight:500">(你)</span>' : ''}</div>
-        <div class="visitor-time">最近访问：${timeStr} · 共访问 ${v.visits||1} 次</div>
-      </div>
-      ${isToday ? '<span class="visitor-badge">今日在线</span>' : ''}
-    </div>`;
-  }).join('');
 }
 
 function formatTime(ts) {
@@ -836,13 +852,13 @@ function showModal() {
   setTimeout(() => nicknameInput.focus(), 300);
 }
 
-function confirmNickname() {
+async function confirmNickname() {
   const raw = nicknameInput.value.trim();
   const nick = raw || nicknameInput.placeholder;
   lsSet(MY_NICK_KEY, nick);
   modal.classList.remove('show');
   navVisitor.textContent = '👤 ' + nick;
-  recordVisit(nick);
+  await recordVisit(nick);
   renderVisitors();
 }
 
@@ -851,13 +867,15 @@ nicknameInput.addEventListener('keydown', e => { if (e.key === 'Enter') confirmN
 navVisitor.addEventListener('click', showModal);
 
 // On load: check if first visit
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   const nick = getMyNick();
   if (!nick) {
     showModal();
+    // 新访客先渲染一次（显示已有访客）
+    renderVisitors();
   } else {
     navVisitor.textContent = '👤 ' + nick;
-    recordVisit(nick);
+    await recordVisit(nick);
     renderVisitors();
   }
 });
